@@ -43,12 +43,22 @@ def multiplicative_inverse(e: int, phi: int) -> int:
     >>> multiplicative_inverse(7, 40)
     23
     """
-    i = 1
-    while (i * e) % phi != 1:
-        i += 1
-    return i
+    arr = []
+    a, b = e, phi
+    while a != 0 and b != 0:
+        arr.append([max(a, b), min(a, b)])
+        a %= b
+        a, b = b, a
+    arr[-1].append(0)
+    arr[-1].append(1)
+    for i in range(len(arr) - 2, -1, -1):
+        arr[i].append(arr[i + 1][3])
+        arr[i].append(arr[i + 1][2] - arr[i + 1][3] * (arr[i][0] // arr[i][1]))
+    if e == arr[1][0]:
+        return arr[1][2] % phi
+    else:
+        return arr[1][3] % phi
     pass
-
 
 def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[int, int]]:
     if not (is_prime(p) and is_prime(q)):
