@@ -2,59 +2,72 @@ import random
 
 
 def read_sudoku(path: str) -> list:
+    """
+    @param path: имя файла
+    @return: матрица, считанная из файла с именем path
+    """
     file = open(path)
     grid = [list(file.readline().rstrip()) for i in range(0, 9)]
     return grid
 
 
-def get_line(grid: list, n: int) -> list:
-    return grid[n]
+# def get_line(grid: list, n: int) -> list:
+#     return grid[n]
 
 
 def get_line_by_pos(grid: list, pos: (int, int)) -> list:
-    """Возвращает все значения для номера строки, указанной в pos
+    """
+    @param grid: матрица, из которой нужно достать ряд
+    @param pos: координаты точки
+    @return: список значений в ряду с индексом pos[0]
         >>> get_line_by_pos([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']], (0, 0))
         ['1', '2', '.']
         >>> get_line_by_pos([['1', '2', '3'], ['4', '.', '6'], ['7', '8', '9']], (1, 0))
         ['4', '.', '6']
         >>> get_line_by_pos([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']], (2, 0))
         ['.', '8', '9']
-        """
+    """
     return grid[pos[0]]
 
 
-def get_column(grid: list, n: int) -> list:
-    s = ""
-    for i in range(0, 9):
-        s += grid[i][n]
-    return list(s)
+# def get_column(grid: list, n: int) -> list:
+#     s = ""
+#     for i in range(0, 9):
+#         s += grid[i][n]
+#     return list(s)
 
 
 def get_column_by_pos(grid: list, pos: (int, int)) -> list:
-    """Возвращает все значения для номера столбца, указанного в pos
+    """
+    @param grid: матрица, из которой нужно достать столбец
+    @param pos: координаты точки
+    @return: список значений в столбце с индексом pos[1]
         >>> get_column_by_pos([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']], (0, 0))
         ['1', '4', '7']
         >>> get_column_by_pos([['1', '2', '3'], ['4', '.', '6'], ['7', '8', '9']], (0, 1))
         ['2', '.', '8']
         >>> get_column_by_pos([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']], (0, 2))
         ['3', '6', '9']
-        """
+    """
     s = []
     for i in range(0, len(grid)):
         s.append(grid[i][pos[1]])
     return s
 
 
-def get_square(grid: list, n: int) -> list:
-    s = []
-    for i in range(n // 3 * 3, (n // 3 + 1) * 3):
-        for j in range(n % 3 * 3, (n % 3 + 1) * 3):
-            s.append(grid[i][j])
-    return s
+# def get_square(grid: list, n: int) -> list:
+#     s = []
+#     for i in range(n // 3 * 3, (n // 3 + 1) * 3):
+#         for j in range(n % 3 * 3, (n % 3 + 1) * 3):
+#             s.append(grid[i][j])
+#     return s
 
 
 def get_square_by_pos(grid: list, pos: (int, int)) -> list:
-    """Возвращает все значения из квадрата, в который попадает позиция pos
+    """
+    @param grid: матрица, из которой нужно достать блок
+    @param pos: координаты точки
+    @return: список значений в блоке, в котором находится точка
         >>> grid = read_sudoku('puzzle1.txt')
         >>> get_square_by_pos(grid, (0, 1))
         ['5', '3', '.', '6', '.', '.', '.', '9', '8']
@@ -62,18 +75,25 @@ def get_square_by_pos(grid: list, pos: (int, int)) -> list:
         ['.', '.', '3', '.', '.', '1', '.', '.', '6']
         >>> get_square_by_pos(grid, (8, 8))
         ['2', '8', '.', '.', '.', '5', '.', '7', '9']
-        """
-    return get_square(grid, (pos[0] // 3) * 3 + (pos[1] // 3))
+    """
+    n = (pos[0] // 3) * 3 + (pos[1] // 3)
+    s = []
+    for i in range(n // 3 * 3, (n // 3 + 1) * 3):
+        for j in range(n % 3 * 3, (n % 3 + 1) * 3):
+            s.append(grid[i][j])
+    return s
 
 
 def group(grid: list, n: int) -> list:
     """
-        Сгруппировать значения values в список, состоящий из списков по n элементов
+    @param grid: список, который нужно разбить
+    @param n: размерность матрицы, которая должна получиться (т.е. n*n)
+    @return: матрица, размерностью n*n
         >>> group([1,2,3,4], 2)
         [[1, 2], [3, 4]]
         >>> group([1,2,3,4,5,6,7,8,9], 3)
         [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-        """
+    """
     arr = []
     for i in range(n):
         curr = []
@@ -84,7 +104,10 @@ def group(grid: list, n: int) -> list:
 
 
 def find_possible_values(grid: list, pos: (int, int)) -> set:
-    """Вернуть множество возможных значения для указанной позиции
+    """
+    @param grid: матрица
+    @param pos: координаты текущей точки
+    @return: список значений, которые можно подставить на место точки с координатами pos
         >>> grid = read_sudoku('puzzle1.txt')
         >>> values = find_possible_values(grid, (0,2))
         >>> values == {'1', '2', '4'}
@@ -92,7 +115,7 @@ def find_possible_values(grid: list, pos: (int, int)) -> set:
         >>> values = find_possible_values(grid, (4,7))
         >>> values == {'2', '5', '9'}
         True
-        """
+    """
     val = []
     for j in range(1, 10):
         i = str(j)
@@ -102,14 +125,16 @@ def find_possible_values(grid: list, pos: (int, int)) -> set:
 
 
 def find_empty_positions(grid: list) -> (int, int):
-    """Найти первую свободную позицию в пазле
+    """
+    @param grid: матрица
+    @return коорнаты первой я яйчейки, содержащей точку
         >>> find_empty_positions([['1', '2', '.'], ['4', '5', '6'], ['7', '8', '9']])
         (0, 2)
         >>> find_empty_positions([['1', '2', '3'], ['4', '.', '6'], ['7', '8', '9']])
         (1, 1)
         >>> find_empty_positions([['1', '2', '3'], ['4', '5', '6'], ['.', '8', '9']])
         (2, 0)
-        """
+    """
     for i in range(0, len(grid)):
         for j in range(0, len(grid[i])):
             if grid[i][j] == '.':
@@ -118,12 +143,23 @@ def find_empty_positions(grid: list) -> (int, int):
 
 
 def is_possible_number(grid: list, i_line: int, j_column: int, num: str) -> bool:
+    """
+    @param grid: матрица
+    @param i_line: индекс ряда, текущего числа
+    @param j_column: индекс столбца, текущего числа
+    @param num: текущее число
+    @return: может ли num стоять в grid на позиции (i_line, j_column)
+    """
     if num in get_line_by_pos(grid, (i_line, j_column)) or num in get_column_by_pos(grid, (i_line, j_column)) or num in get_square_by_pos(grid, (i_line, j_column)):
         return False
     return True
 
 
 def is_correct_answer(grid: list) -> bool:
+    """
+    @param grid: матрица
+    @return: может ли матрица быть решением sudoku (не пропускает точки)
+    """
     for i_line in range(0, len(grid)):
         for j_column in range(0, len(grid[i_line])):
             if grid[i_line][j_column] == '.':
@@ -142,6 +178,10 @@ def is_correct_answer(grid: list) -> bool:
 
 
 def is_correct_sudoku(grid: list) -> bool:
+    """
+    @param grid: матрица
+    @return: может ли матрица быть входящим судоку (пропускает точки)
+    """
     for i_line in range(0, len(grid)):
         for j_column in range(0, len(grid[i_line])):
             if grid[i_line][j_column] != '.':
@@ -158,8 +198,14 @@ def is_correct_sudoku(grid: list) -> bool:
 
 
 def sudoku_solve(grid: list) -> bool:
-    for i_line in range(9):
-        for j_column in range(9):
+    """
+    @param grid: матрица
+    @return: false, если число не может стоять на данной позиции
+    Функция реализована так, что она заполняет яйчейки с точками числами по порядку, и если число не может стоять
+    в данной яйчейке, то возвращает false
+    """
+    for i_line in range(0, 9):
+        for j_column in range(0, 9):
             if grid[i_line][j_column] == '.':
                 for num in range(1, 10):
                     if is_possible_number(grid, i_line, j_column, str(num)):
@@ -173,13 +219,9 @@ def sudoku_solve(grid: list) -> bool:
 
 
 def get_solve(grid: list) -> list:
-    """ Решение пазла, заданного в grid """
-    """ Как решать Судоку?
-        1. Найти свободную позицию
-        2. Найти все возможные значения, которые могут находиться на этой позиции
-        3. Для каждого возможного значения:
-            3.1. Поместить это значение на эту позицию
-            3.2. Продолжить решать оставшуюся часть пазла
+    """
+    @param grid: матрица
+    @return: решенная матрица
     >>> grid = read_sudoku('puzzle1.txt')
     >>> get_solve(grid)
     [['5', '3', '4', '6', '7', '8', '9', '1', '2'], ['6', '7', '2', '1', '9', '5', '3', '4', '8'], ['1', '9', '8', '3', '4', '2', '5', '6', '7'], ['8', '5', '9', '7', '6', '1', '4', '2', '3'], ['4', '2', '6', '8', '5', '3', '7', '9', '1'], ['7', '1', '3', '9', '2', '4', '8', '5', '6'], ['9', '6', '1', '5', '3', '7', '2', '8', '4'], ['2', '8', '7', '4', '1', '9', '6', '3', '5'], ['3', '4', '5', '2', '8', '6', '1', '7', '9']]
@@ -189,6 +231,10 @@ def get_solve(grid: list) -> list:
 
 
 def print_grid(grid: list):
+    """
+    @param grid: матрица
+    печатает матрицу в красивом виде
+    """
     for i in range(9):
         if i % 3 == 0 and i != 0:
             print("------+-------+------")
@@ -200,7 +246,9 @@ def print_grid(grid: list):
 
 
 def generate_sudoku(n: int) -> list:
-    """Генерация судоку заполненного на N элементов
+    """
+    @param n: кол-во заполненных элементов в матрице
+    Генерация судоку заполненного на N элементов
         >>> grid = generate_sudoku(40)
         >>> sum(1 for row in grid for e in row if e == '.')
         41
